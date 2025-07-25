@@ -1,0 +1,82 @@
+spring:
+  application:
+    name: gateway
+  config:
+    import: "configserver:http://localhost:8888"
+
+
+
+# server:
+#   port: 8484
+#
+# spring:
+#   application:
+#     name: api-gateway
+#   cloud:
+#     gateway:
+#       routes:
+#         - id: user-service
+#           uri: http://localhost:8080
+#           predicates:
+#             - Path=/users/
+#           filters:
+#             - name: CircuitBreaker
+#               args:
+#                 name: userServiceCB
+#                 fallbackUri: forward:/fallback/user
+#                 statusCodes: 500,502,503,504
+#             - name: Retry
+#               args:
+#                 retries: 3
+#                 series: SERVER_ERROR
+#                 methods: GET,POST
+#                 backoff:
+#                   firstBackoff: 100ms
+#                   maxBackoff: 1000ms
+#                   factor: 2
+#
+#         - id: notification-service
+#           uri: http://localhost:8282
+#           predicates:
+#             - Path=/notification/
+#           filters:
+#             - name: CircuitBreaker
+#               args:
+#                 name: notificationServiceCB
+#                 fallbackUri: forward:/fallback/notification
+#                 statusCodes: 500,502,503,504
+#
+#       default-filters:
+#         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
+#
+#   resilience4j.circuitbreaker:
+#     instances:
+#       userServiceCB:
+#         slidingWindowType: COUNT_BASED
+#         slidingWindowSize: 10
+#         minimumNumberOfCalls: 5
+#         permittedNumberOfCallsInHalfOpenState: 3
+#         waitDurationInOpenState: 10s
+#         failureRateThreshold: 50
+#       notificationServiceCB:
+#         slidingWindowType: TIME_BASED
+#         slidingWindowSize: 60s
+#         minimumNumberOfCalls: 10
+#         waitDurationInOpenState: 30s
+#         failureRateThreshold: 40
+#
+# management:
+#   endpoint:
+#     health:
+#       show-details: always
+#       circuitbreakers:
+#         enabled: true
+#   endpoints:
+#     web:
+#       exposure:
+#         include: health,circuitbreakers,metrics
+#
+# logging:
+#   level:
+#     org.springframework.cloud.gateway: DEBUG
+#     reactor.netty: INFO
